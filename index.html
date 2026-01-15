@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ares Advisory — Architecture du revenu</title>
+  <meta name="description" content="Ares Advisory conçoit des systèmes de vente et d’architecture du revenu qui transforment les deals en cash prévisible." />
+  <meta name="theme-color" content="#0B0B10" />
+
+  <style>
+    :root{
+      --bg:#0B0B10;
+      --panel:#101018;
+      --panel2:#0E0E16;
+      --text:#EDEDF2;
+      --muted:#A7A7B6;
+      --muted2:#7C7C8E;
+      --line:rgba(255,255,255,.10);
+      --accent:#C9A46A; /* bronze */
+      --accent2:#E6D3A7;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --radius:16px;
+      --radius2:22px;
+      --max:1120px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(201,164,106,.18), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(230,211,167,.10), transparent 60%),
+        radial-gradient(900px 700px at 50% 110%, rgba(201,164,106,.08), transparent 65%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.45;
+      overflow-x:hidden;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .wrap{ width:100%; max-width:var(--max); margin:0 auto; padding:0 22px; }
+
+    /* Top nav */
+    header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(11,11,16,.75), rgba(11,11,16,.45));
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 0;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:650;
+      font-size:13px;
+      color:rgba(237,237,242,.92);
+    }
+    .mark{
+      width:34px;height:34px;border-radius:12px;
+      background:
+        radial-gradient(24px 24px at 30% 25%, rgba(201,164,106,.35), transparent 60%),
+        linear-gradient(135deg, rgba(201,164,106,.35), rgba(255,255,255,.06));
+      border:1px solid rgba(201,164,106,.25);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    .navlinks{
+      display:flex; gap:18px; align-items:center;
+      font-size:13px; color:rgba(237,237,242,.78);
+    }
+    .navlinks a{ padding:8px 10px; border-radius:12px; }
+    .navlinks a:hover{ background: rgba(255,255,255,.05); }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:11px 14px;
+      border-radius:14px;
+      border:1px solid rgba(201,164,106,.35);
+      background: linear-gradient(135deg, rgba(201,164,106,.22), rgba(255,255,255,.05));
+      color: rgba(237,237,242,.95);
+      font-weight:650;
+      font-size:13px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.35);
+      gap:10px;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+      cursor:pointer;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(230,211,167,.5); }
+    .btn:active{ transform: translateY(0px); }
+
+    .btn.secondary{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      box-shadow:none;
+      color: rgba(237,237,242,.85);
+    }
+    .btn.secondary:hover{ border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
+
+    /* Hero */
+    .hero{
+      padding:64px 0 18px;
+      position:relative;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:28px;
+      align-items:start;
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(201,164,106,.28);
+      background: rgba(201,164,106,.08);
+      color: rgba(230,211,167,.95);
+      font-size:12.5px;
+      letter-spacing:.02em;
+      margin-bottom:16px;
+    }
+    .dot{
+      width:7px;height:7px;border-radius:999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(201,164,106,.12);
+    }
+    h1{
+      margin:0 0 14px;
+      font-size: 46px;
+      line-height:1.05;
+      letter-spacing:-.02em;
+    }
+    .sub{
+      margin:0 0 22px;
+      color: rgba(237,237,242,.78);
+      font-size:16.5px;
+      max-width:52ch;
+    }
+    .cta-row{
+      display:flex; gap:12px; flex-wrap:wrap;
+      margin: 18px 0 18px;
+    }
+
+    .mini-kpis{
+      display:grid;
+      grid-template-columns: repeat(3,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    .kpi{
+      padding:14px 14px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.09);
+      box-shadow: 0 14px 60px rgba(0,0,0,.35);
+      min-height:78px;
+    }
+    .kpi b{
+      display:block;
+      font-size:14px;
+      margin-bottom:6px;
+      color: rgba(237,237,242,.92);
+    }
+    .kpi span{
+      display:block;
+      font-size:12.5px;
+      color: rgba(167,167,182,.95);
+    }
+
+    /* Right card */
+    .card{
+      position:relative;
+      border-radius: var(--radius2);
+      padding:18px;
+      background: linear-gradient(180deg, rgba(16,16,24,.82), rgba(14,14,22,.74));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(600px 240px at 20% 10%, rgba(201,164,106,.18), transparent 55%),
+                  radial-gradient(420px 260px at 85% 45%, rgba(230,211,167,.10), transparent 60%);
+      pointer-events:none;
+      opacity:.9;
+    }
+    .card > *{ position:relative; }
+    .card h3{ margin:0 0 8px; font-size:15px; letter-spacing:.01em; }
+    .card p{ margin:0 0 16px; color: rgba(167,167,182,.95); font-size:13.5px; }
+    .list{
+      display:grid; gap:10px;
+    }
+    .item{
+      display:flex; gap:12px;
+      padding:12px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .ic{
+      width:34px;height:34px;border-radius:12px;
+      display:grid; place-items:center;
+      background: rgba(201,164,106,.10);
+      border:1px solid rgba(201,164,106,.22);
+      color: rgba(230,211,167,.95);
+      flex:0 0 auto;
+    }
+    .item b{ display:block; font-size:13px; }
+    .item span{ display:block; font-size:12.3px; color: rgba(167,167,182,.92); margin-top:2px; }
+
+    /* Sections */
+    section{ padding:44px 0; }
+    .section-title{
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap:14px; margin-bottom:16px;
+    }
+    .section-title h2{
+      margin:0;
+      font-size:22px;
+      letter-spacing:-.01em;
+    }
+    .section-title p{
+      margin:0;
+      color: rgba(167,167,182,.92);
+      max-width:60ch;
+      font-size:13.5px;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns: repeat(3,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+    .box{
+      padding:16px;
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.09);
+      box-shadow: 0 18px 60px rgba(0,0,0,.25);
+      min-height:140px;
+    }
+    .box b{ display:block; margin:0 0 8px; font-size:14px; }
+    .box p{ margin:0; color: rgba(167,167,182,.95); font-size:13.5px; }
+
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .bullets{
+      margin:10px 0 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:10px;
+    }
+    .bullets li{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:12px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      color: rgba(237,237,242,.86);
+      font-size:13.5px;
+    }
+    .check{
+      width:18px;height:18px;border-radius:8px;
+      background: rgba(201,164,106,.12);
+      border:1px solid rgba(201,164,106,.25);
+      margin-top:1px;
+      flex:0 0 auto;
+      position:relative;
+    }
+    .check:after{
+      content:"";
+      position:absolute; left:5px; top:3px;
+      width:6px; height:9px;
+      border:2px solid rgba(230,211,167,.95);
+      border-left:none; border-top:none;
+      transform: rotate(40deg);
+    }
+
+    /* Contact */
+    .contact{
+      padding:22px;
+      border-radius: var(--radius2);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
+      align-items:start;
+    }
+    label{ display:block; font-size:12.5px; color: rgba(167,167,182,.95); margin:0 0 6px; }
+    input, textarea{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(12,12,18,.6);
+      color: rgba(237,237,242,.92);
+      outline:none;
+      font-size:14px;
+    }
+    textarea{ min-height:120px; resize:vertical; }
+    input:focus, textarea:focus{ border-color: rgba(201,164,106,.38); box-shadow: 0 0 0 6px rgba(201,164,106,.10); }
+
+    .small{
+      color: rgba(167,167,182,.9);
+      font-size:12.5px;
+      margin-top:10px;
+    }
+    footer{
+      padding:22px 0 44px;
+      color: rgba(167,167,182,.8);
+      font-size:12.5px;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    /* Reveal animations */
+    .reveal{
+      opacity:0;
+      transform: translateY(14px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .reveal.show{
+      opacity:1;
+      transform: translateY(0);
+    }
+
+    /* Subtle floating background */
+    .floaty{
+      position:absolute;
+      inset: -120px -80px auto auto;
+      width:520px;height:520px;
+      border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, rgba(201,164,106,.18), transparent 55%);
+      filter: blur(12px);
+      opacity:.6;
+      pointer-events:none;
+      animation: drift 14s ease-in-out infinite;
+    }
+    @keyframes drift{
+      0%,100%{ transform: translate(0,0) scale(1); }
+      50%{ transform: translate(-28px, 18px) scale(1.03); }
+    }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      h1{ font-size:40px; }
+      .hero-grid{ grid-template-columns: 1fr; }
+      .mini-kpis{ grid-template-columns: 1fr; }
+      .grid-3{ grid-template-columns: 1fr; }
+      .split{ grid-template-columns: 1fr; }
+      .contact{ grid-template-columns: 1fr; }
+      .navlinks{ display:none; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <div class="nav">
+      <a class="brand" href="#top" aria-label="Ares Advisory">
+        <span class="mark" aria-hidden="true"></span>
+        <span>ARES Advisory</span>
+      </a>
+      <nav class="navlinks" aria-label="Navigation">
+        <a href="#problems">Problème</a>
+        <a href="#what">Ce que nous faisons</a>
+        <a href="#how">Comment nous travaillons</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a class="btn" href="#contact">Demander une conversation <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <div class="hero">
+      <div class="floaty" aria-hidden="true"></div>
+
+      <div class="hero-grid">
+        <div class="reveal">
+          <div class="pill"><span class="dot" aria-hidden="true"></span> Advisory stratégique • Vente & Revenu</div>
+          <h1>Nous concevons des systèmes de vente<br/>qui transforment les deals en <span style="color:var(--accent2)">cash prévisible</span>.</h1>
+          <p class="sub">
+            Ares Advisory accompagne les dirigeants d’entreprises high-ticket à structurer l’architecture du revenu :
+            KPI, processus, organisation, et décisions — pour gagner en stabilité, profit et prévisibilité.
+          </p>
+
+          <div class="cta-row">
+            <a class="btn" href="#contact">Demander une conversation <span aria-hidden="true">→</span></a>
+            <a class="btn secondary" href="#what">Voir notre approche</a>
+          </div>
+
+          <div class="mini-kpis">
+            <div class="kpi">
+              <b>Économie avant activité</b>
+              <span>On optimise le cash et le profit — pas le volume de calls.</span>
+            </div>
+            <div class="kpi">
+              <b>Vision système</b>
+              <span>Du lead au cash, avec une lecture complète du revenu.</span>
+            </div>
+            <div class="kpi">
+              <b>Sélectif</b>
+              <span>Peu de partenaires, forte implication, décisions rapides.</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="card reveal" aria-label="Ce que nous adressons">
+          <h3>Ce que nous corrigeons le plus souvent</h3>
+          <p>Les équipes “actives” ne sont pas toujours rentables. Nous réalignons le système sur le cash.</p>
+
+          <div class="list">
+            <div class="item">
+              <div class="ic" aria-hidden="true">◎</div>
+              <div>
+                <b>Deals signés, cash instable</b>
+                <span>Le contracté ne se transforme pas en collecté de manière prévisible.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="ic" aria-hidden="true">▣</div>
+              <div>
+                <b>KPI mal alignés sur le profit</b>
+                <span>Trop de focus sur le volume plutôt que sur la rentabilité par action.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="ic" aria-hidden="true">△</div>
+              <div>
+                <b>Responsabilités floues</b>
+                <span>On clarifie “qui possède quoi” pour accélérer les décisions.</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <section id="problems">
+    <div class="wrap">
+      <div class="section-title reveal">
+        <div>
+          <h2>La plupart des entreprises n’ont pas un problème de vente.</h2>
+          <p>Elles ont un problème d’architecture du revenu : une mécanique qui ne transforme pas la performance en cash prévisible.</p>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="box reveal">
+          <b>Activité élevée, rentabilité faible</b>
+          <p>Beaucoup de calls, beaucoup d’efforts… mais un cash par action trop bas pour soutenir la croissance.</p>
+        </div>
+        <div class="box reveal">
+          <b>Décisions sans visibilité</b>
+          <p>Sans KPIs économiques, on pilote à l’intuition. Résultat : instabilité et pertes invisibles.</p>
+        </div>
+        <div class="box reveal">
+          <b>Système non scalable</b>
+          <p>Le modèle tient “par héroïsme”. Dès qu’un maillon faiblit, la performance s’effondre.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="what">
+    <div class="wrap">
+      <div class="section-title reveal">
+        <div>
+          <h2>Ce que fait Ares Advisory</h2>
+          <p>Un advisory orienté cash, profit et prévisibilité — au niveau système.</p>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="box reveal">
+          <b>Architecture du revenu & KPI design</b>
+          <p>Nous définissons les indicateurs qui protègent le profit (ex : cash par call, ratio collecté/contracté, délais de paiement) et les seuils de viabilité.</p>
+          <ul class="bullets">
+            <li><span class="check" aria-hidden="true"></span>Benchmarks économiques & seuils de rentabilité</li>
+            <li><span class="check" aria-hidden="true"></span>Tableaux de bord (simple, actionnable, CEO-level)</li>
+            <li><span class="check" aria-hidden="true"></span>Cadre de décisions (qui décide quoi, quand, pourquoi)</li>
+          </ul>
+        </div>
+
+        <div class="box reveal">
+          <b>Structuration sales (du lead au cash)</b>
+          <p>Nous alignons acquisition, qualification, closing et paiement pour que le call devienne un outil de décision — pas un outil de tri.</p>
+          <ul class="bullets">
+            <li><span class="check" aria-hidden="true"></span>Qualification amont (sans détruire la conversion)</li>
+            <li><span class="check" aria-hidden="true"></span>Responsabilités sur le cash collecté</li>
+            <li><span class="check" aria-hidden="true"></span>Amélioration du passage “signature → paiement”</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="section-title reveal">
+        <div>
+          <h2>Comment nous travaillons</h2>
+          <p>Implication élevée, peu de partenaires, et une obsession : transformer l’effort commercial en cash et profit.</p>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="box reveal">
+          <b>Proche du CEO</b>
+          <p>Nous travaillons au niveau décisionnel pour éliminer les frictions, clarifier les rôles et accélérer l’exécution.</p>
+        </div>
+        <div class="box reveal">
+          <b>Skin in the game</b>
+          <p>Quand c’est pertinent, nos incitations sont alignées sur la performance réelle (cash & profit), pas sur l’activité.</p>
+        </div>
+        <div class="box reveal">
+          <b>Sélectif</b>
+          <p>Nous ne “scalons” pas un programme. Nous construisons avec vous. Qualité > volume.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fit">
+    <div class="wrap">
+      <div class="section-title reveal">
+        <div>
+          <h2>Pour qui / Pas pour qui</h2>
+          <p>Un filtre simple pour rester aligned.</p>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="box reveal">
+          <b>Pour</b>
+          <ul class="bullets">
+            <li><span class="check" aria-hidden="true"></span>Entreprises high-ticket avec offre validée</li>
+            <li><span class="check" aria-hidden="true"></span>Dirigeants qui veulent de la prévisibilité</li>
+            <li><span class="check" aria-hidden="true"></span>Équipes sales actives mais profit instable</li>
+          </ul>
+        </div>
+        <div class="box reveal">
+          <b>Pas pour</b>
+          <ul class="bullets">
+            <li><span class="check" aria-hidden="true"></span>Projets early-stage sans traction</li>
+            <li><span class="check" aria-hidden="true"></span>Coaching “scripts & hacks”</li>
+            <li><span class="check" aria-hidden="true"></span>Recherche de volume sans exigence économique</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap">
+      <div class="section-title reveal">
+        <div>
+          <h2>À propos</h2>
+          <p>De closer à architecte du revenu.</p>
+        </div>
+      </div>
+
+      <div class="box reveal">
+        <p style="margin:0;color:rgba(237,237,242,.82);font-size:14px;">
+          Ares Advisory a été créé à partir d’un constat simple : la performance commerciale ne suffit pas à créer de la stabilité.
+          Après des années dans le high ticket, l’enjeu devient systémique : transformer la vente en revenu prévisible,
+          protéger le profit, et construire une machine qui ne dépend pas d’un héros.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="section-title reveal">
+        <div>
+          <h2>Contact</h2>
+          <p>Une conversation courte pour vérifier l’alignement et identifier le levier le plus évident.</p>
+        </div>
+      </div>
+
+      <div class="contact reveal">
+        <div>
+          <b style="display:block;margin-bottom:8px;">Demander une conversation</b>
+          <p style="margin:0;color:rgba(167,167,182,.95);font-size:13.5px;">
+            Remplis ce formulaire, ou écris directement par email. Réponse sous 24–48h ouvrées.
+          </p>
+          <p class="small">
+            Email : <span style="color:rgba(230,211,167,.95)">contact@aresadvisory.co</span><br/>
+            LinkedIn : <span style="color:rgba(230,211,167,.95)">linkedin.com/company/ares-advisory</span>
+          </p>
+        </div>
+
+        <form onsubmit="return sendEmail(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label for="name">Nom</label>
+              <input id="name" name="name" placeholder="Votre nom" required />
+            </div>
+            <div>
+              <label for="company">Entreprise</label>
+              <input id="company" name="company" placeholder="Nom de l’entreprise" />
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="vous@entreprise.com" required />
+            </div>
+            <div>
+              <label for="topic">Sujet</label>
+              <input id="topic" name="topic" placeholder="Ex : cash / sales / structure" />
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Décrivez brièvement votre situation (cash, ventes, équipe, objectifs)…" required></textarea>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px;">
+            <button class="btn" type="submit">Envoyer <span aria-hidden="true">→</span></button>
+            <span class="small" id="formNote">Le formulaire ouvre votre email (aucune donnée stockée).</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div>© <span id="year"></span> Ares Advisory. Tous droits réservés.</div>
+      <div style="color:rgba(167,167,182,.7);">Architecture du revenu • Advisory</div>
+    </div>
+  </footer>
+</main>
+
+<script>
+  // Year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Smooth scroll for internal links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href');
+      const el = document.querySelector(id);
+      if(!el) return;
+      e.preventDefault();
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+      history.pushState(null, "", id);
+    });
+  });
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(ent=>{
+      if(ent.isIntersecting){
+        ent.target.classList.add('show');
+        io.unobserve(ent.target);
+      }
+    });
+  },{ threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Contact form: opens user's email client via mailto (simple, no backend)
+  function sendEmail(e){
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const company = document.getElementById('company').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const topic = document.getElementById('topic').value.trim();
+    const msg = document.getElementById('message').value.trim();
+
+    const to = "contact@aresadvisory.co"; // <-- change if needed
+    const subject = encodeURIComponent(`[Ares Advisory] ${topic || "Demande de conversation"} — ${name}${company ? " / " + company : ""}`);
+    const body = encodeURIComponent(
+      `Nom: ${name}\nEntreprise: ${company || "-"}\nEmail: ${email}\n\nMessage:\n${msg}\n`
+    );
+
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+    document.getElementById('formNote').textContent = "Email prêt — envoyez-le depuis votre client mail.";
+    return false;
+  }
+  window.sendEmail = sendEmail;
+</script>
+</body>
+</html>
